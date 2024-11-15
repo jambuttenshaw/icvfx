@@ -35,6 +35,10 @@
 		{
 			"Name": "DisplayClusterLaunch",
 			"Enabled": true
+		},
+		{
+			"Name": "LiveLinkViconDataStream",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
