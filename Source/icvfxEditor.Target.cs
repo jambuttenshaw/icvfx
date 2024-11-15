@@ -9,7 +9,8 @@ public class icvfxEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
+        IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 
-		ExtraModuleNames.AddRange( new string[] { "icvfx" } );
+        ExtraModuleNames.AddRange( new string[] { "icvfx" } );
 	}
 }

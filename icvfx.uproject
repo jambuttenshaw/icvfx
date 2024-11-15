@@ -7,14 +7,13 @@
 		{
 			"Name": "icvfx",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "ICVFX",
-			"Enabled": true
-		},
 		{
 			"Name": "OpenXR",
 			"Enabled": true,
@@ -38,7 +37,7 @@
 		},
 		{
 			"Name": "LiveLinkViconDataStream",
-			"Enabled": true
+			"Enabled": false
 		}
 	],
 	"TargetPlatforms": [
