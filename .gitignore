@@ -77,3 +77,4 @@ DerivedDataCache/*
 
 # Custom ignores
 Content/Environments/*
+icvfx.sln.DotSettings.user
