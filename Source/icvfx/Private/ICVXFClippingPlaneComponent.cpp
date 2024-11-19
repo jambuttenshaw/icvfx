@@ -1,32 +1,43 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ICVXFClippingPlaneManager.h"
+#include "ICVXFClippingPlaneComponent.h"
 
 #include "Components/SceneCaptureComponent2D.h"
-#include "Runtime/CinematicCamera/Public/CineCameraComponent.h"
 
-UICVXFClippingPlaneManager::UICVXFClippingPlaneManager()
+#include "CineCameraComponent.h"
+#include "CineCameraActor.h"
+
+
+UICVXFClippingPlaneComponent::UICVXFClippingPlaneComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bTickInEditor = true;
 }
 
 
-void UICVXFClippingPlaneManager::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UICVXFClippingPlaneComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (!bEnabled)
+	{
+		return;
+	}
+
 	// Make sure all the required components exist
 
 	const auto ScreenTransform = Cast<USceneComponent>(ScreenComponentRef.GetComponent(nullptr));
 
 	USceneCaptureComponent2D* SceneCaptureComponent = nullptr;
-	if (AActor* Actor = SceneCaptureComponentRef.OtherActor.Get())
+	if (SceneCaptureActor)
 	{
-		SceneCaptureComponent = Cast<USceneCaptureComponent2D>(Actor->GetComponentByClass(USceneCaptureComponent2D::StaticClass()));
+		SceneCaptureComponent = Cast<USceneCaptureComponent2D>(SceneCaptureActor->GetComponentByClass(USceneCaptureComponent2D::StaticClass()));
 	}
 
-	//const auto SceneCaptureComponent = StaticCast<USceneCaptureComponent2D*>(SceneCaptureComponentRef.GetComponent(nullptr));
-	const auto CineCameraComponent = Cast<UCineCameraComponent>(CineCameraComponentRef.GetComponent(nullptr));
+	UCineCameraComponent* CineCameraComponent = nullptr;
+	if (CineCameraActor)
+	{
+		CineCameraComponent = Cast<UCineCameraComponent>(CineCameraActor->GetComponentByClass(UCineCameraComponent::StaticClass()));
+	}
 
 	if (!SceneCaptureComponent || !ScreenTransform || !CineCameraComponent)
 	{
@@ -34,8 +45,11 @@ void UICVXFClippingPlaneManager::TickComponent(float DeltaTime, enum ELevelTick 
 		if (SceneCaptureComponent) SceneCaptureComponent->bEnableClipPlane = false;
 		if (CineCameraComponent) CineCameraComponent->bOverride_CustomNearClippingPlane = false;
 
+		bIsSetUpCorrect = false;
 		return;
 	}
+
+	bIsSetUpCorrect = true;
 
 	// Set up clipping planes
 	// Get the normal and position on plane
@@ -66,4 +80,17 @@ void UICVXFClippingPlaneManager::TickComponent(float DeltaTime, enum ELevelTick 
 		CineCameraComponent->bOverride_CustomNearClippingPlane = true;
 		CineCameraComponent->CustomNearClippingPlane = DistanceToPlane;
 	}
+}
+
+void UICVXFClippingPlaneComponent::DebugCheckSetup() const
+{
+	const bool SceneComponentValid = ScreenComponentRef.GetComponent(nullptr) != nullptr;
+	const bool ScreenCaptureComponentValid = SceneCaptureActor->GetComponentByClass(USceneCaptureComponent2D::StaticClass()) != nullptr;
+	const bool CineCameraComponentValid = CineCameraActor->GetComponentByClass(UCineCameraComponent::StaticClass()) != nullptr;
+
+	FString DebugString = FString::Printf(
+		TEXT("Is set up correct: %d\n SceneComponent: %d\n ScreenCaptureComponent: %d\n CineCameraComponent: %d"),
+		bIsSetUpCorrect, SceneComponentValid, ScreenCaptureComponentValid, CineCameraComponentValid
+	);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, DebugString);
 }

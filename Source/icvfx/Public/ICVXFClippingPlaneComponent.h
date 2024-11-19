@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ICVXFClippingPlaneManager.generated.h"
+
+#include "ICVXFClippingPlaneComponent.generated.h"
+
+
+class ACineCameraActor;
 
 /*
  * A simple actor component to manage clipping planes for Composure layers and ICVFX rendering
@@ -12,17 +16,27 @@
  * and also set the near clipping distance for the active CineCamera
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class ICVFX_API UICVXFClippingPlaneManager : public UActorComponent
+class ICVFX_API UICVXFClippingPlaneComponent : public UActorComponent
 {
 	GENERATED_BODY()
 	
 public:	
-	UICVXFClippingPlaneManager();
+	UICVXFClippingPlaneComponent();
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	// Blueprint Interface
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsSetupCorrect() const { return bIsSetUpCorrect; }
+
+	UFUNCTION(BlueprintCallable, CallInEditor, Category="Debug")
+	void DebugCheckSetup() const;
 
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bEnabled = true;
 
 	// The screen to align the clipping plane with.
 	// Specify a scene component in the editor, usually the nDisplay Screen/Static Mesh used for displaying the backplate
@@ -33,16 +47,17 @@ protected:
 
 	// The scene capture component that this component will manage the clipping plane for
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FComponentReference SceneCaptureComponentRef;
+	TObjectPtr<AActor> SceneCaptureActor;
 
 	// The CineCamera component that the inner frustum is rendering from
 	// This component will manipulate its near plane distance to match it to the screen
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FComponentReference CineCameraComponentRef;
+	TObjectPtr<ACineCameraActor> CineCameraActor;
 
 	// To allow configuration for clipping foreground or background
 	// depending on which composure layer this component is applied
 	UPROPERTY(EditAnywhere, BlueprintReadWrite);
 	bool bFlipClippingPlane = false;
-	
+
+	bool bIsSetUpCorrect = false;
 };
