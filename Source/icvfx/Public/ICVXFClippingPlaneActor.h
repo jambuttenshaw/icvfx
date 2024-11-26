@@ -8,6 +8,9 @@
 
 class UICVXFClippingPlaneComponent;
 
+/*
+ * An actor that contains an ICVFXClippingPlaneComponent.
+ */
 UCLASS(BlueprintType, Blueprintable)
 class ICVFX_API AICVXFClippingPlaneActor : public AActor
 {
@@ -15,12 +18,6 @@ class ICVFX_API AICVXFClippingPlaneActor : public AActor
 	
 public:	
 	AICVXFClippingPlaneActor();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	virtual void Tick(float DeltaTime) override;
 
 protected:
 	UPROPERTY(Category = "Components", VisibleAnywhere, BlueprintReadWrite)

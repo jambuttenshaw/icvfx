@@ -15,18 +15,3 @@ AICVXFClippingPlaneActor::AICVXFClippingPlaneActor()
 
 	ClippingPlaneComponent = CreateDefaultSubobject<UICVXFClippingPlaneComponent>(TEXT("Clipping Plane Component"));
 }
-
-// Called when the game starts or when spawned
-void AICVXFClippingPlaneActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AICVXFClippingPlaneActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
